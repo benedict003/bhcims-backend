@@ -27,7 +27,7 @@ class ResidentController extends Controller
         );
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
         $resident = Resident::findOrFail($id);
         $resident->update($request->all());
