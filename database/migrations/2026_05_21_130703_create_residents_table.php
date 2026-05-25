@@ -14,16 +14,11 @@ return new class extends Migration
         Schema::create('residents', function (Blueprint $table) {
             $table->id();
 
-            $table->string('first_name');
             $table->string('middle_name')->nullable();
-            $table->string('last_name');
-
-            $table->string('gender');
-            $table->date('birth_date');
-
+            $table->string('gender')->nullable();
+            $table->date('birth_date')->nullable();
             $table->string('contact_number')->nullable();
-            $table->text('address');
-
+            $table->string('address')->nullable();
             $table->string('blood_type')->nullable();
             $table->string('civil_status')->nullable();
 

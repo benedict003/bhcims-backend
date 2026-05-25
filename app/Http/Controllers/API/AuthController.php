@@ -31,27 +31,40 @@ class AuthController extends Controller
     }
 
     public function login(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
+{
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required'
+    ]);
 
-        $user = User::where('email', $request->email)->first();
+    $user = User::where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json([
-                'message' => 'Invalid credentials'
-            ], 401);
-        }
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'token' => $token,
-            'user' => $user
-        ]);
+    if (!$user || !Hash::check($request->password, $user->password)) {
+        return response()->json(['message' => 'Invalid credentials'], 401);
     }
+
+    $user->resident()->firstOrCreate(
+    ['user_id' => $user->id],
+    [
+        'first_name' => $user->name,
+        'middle_name' => null,
+        'last_name' => null,
+        'gender' => null,
+        'birth_date' => null,
+        'contact_number' => null,
+        'address' => null,
+        'blood_type' => null,
+        'civil_status' => null,
+    ]
+);
+
+    $token = $user->createToken('auth_token')->plainTextToken;
+
+    return response()->json([
+        'token' => $token,
+        'user' => $user->load('resident')
+    ]);
+}
 
     public function profile(Request $request)
     {
