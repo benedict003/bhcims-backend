@@ -30,6 +30,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('/appointments', AppointmentController::class);
 
     Route::apiResource('residents', ResidentController::class);
+    oute::put('/resident', [ResidentController::class, 'update']);
 
     Route::apiResource('consultations', ConsultationController::class);
 
