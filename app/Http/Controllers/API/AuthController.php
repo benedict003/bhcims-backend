@@ -43,18 +43,18 @@ class AuthController extends Controller
         return response()->json(['message' => 'Invalid credentials'], 401);
     }
 
-    $user->resident()->firstOrCreate(
+  $user->resident()->firstOrCreate(
     ['user_id' => $user->id],
     [
         'first_name' => $user->name,
-        'middle_name' => null,
-        'last_name' => null,
-        'gender' => null,
-        'birth_date' => null,
-        'contact_number' => null,
-        'address' => null,
-        'blood_type' => null,
-        'civil_status' => null,
+        'middle_name' => 'N/A',
+        'last_name' => 'N/A',
+        'gender' => 'N/A',
+        'birth_date' => now(),
+        'contact_number' => 'N/A',
+        'address' => 'N/A',
+        'blood_type' => 'N/A',
+        'civil_status' => 'N/A',
     ]
 );
 
