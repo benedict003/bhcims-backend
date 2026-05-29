@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Medicine;
+use Carbon\Carbon;
 
 class MedicineSeeder extends Seeder
 {
@@ -28,6 +28,9 @@ class MedicineSeeder extends Seeder
                 'medicine_name' => $name,
                 'stock_quantity' => rand(5, 200),
                 'unit' => 'tablet',
+
+                // 🔥 IMPORTANT: match your fillable field
+                'expiration_date' => Carbon::now()->addMonths(rand(6, 36)),
             ]);
         }
     }
