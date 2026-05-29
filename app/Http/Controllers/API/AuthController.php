@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Resident;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -21,7 +22,19 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'user',
+            'role' => 'resident',
+        ]);
+
+        $user->resident()->create([
+            'first_name' => $user->name,
+            'middle_name' => 'N/A',
+            'last_name' => 'N/A',
+            'gender' => 'N/A',
+            'birth_date' => now(),
+            'contact_number' => 'N/A',
+            'address' => 'N/A',
+            'blood_type' => 'N/A',
+            'civil_status' => 'N/A',
         ]);
 
         return response()->json([
@@ -31,40 +44,43 @@ class AuthController extends Controller
     }
 
     public function login(Request $request)
-{
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required'
-    ]);
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
 
-    $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)->first();
 
-    if (!$user || !Hash::check($request->password, $user->password)) {
-        return response()->json(['message' => 'Invalid credentials'], 401);
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Invalid credentials'], 401);
+        }
+
+
+        if ($user->role === 'resident') {
+            $user->resident()->firstOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'first_name' => $user->name,
+                    'middle_name' => 'N/A',
+                    'last_name' => 'N/A',
+                    'gender' => 'N/A',
+                    'birth_date' => now(),
+                    'contact_number' => 'N/A',
+                    'address' => 'N/A',
+                    'blood_type' => 'N/A',
+                    'civil_status' => 'N/A',
+                ]
+            );
+        }
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'token' => $token,
+            'user' => $user->load('resident')
+        ]);
     }
-
-  $user->resident()->firstOrCreate(
-    ['user_id' => $user->id],
-    [
-        'first_name' => $user->name,
-        'middle_name' => 'N/A',
-        'last_name' => 'N/A',
-        'gender' => 'N/A',
-        'birth_date' => now(),
-        'contact_number' => 'N/A',
-        'address' => 'N/A',
-        'blood_type' => 'N/A',
-        'civil_status' => 'N/A',
-    ]
-);
-
-    $token = $user->createToken('auth_token')->plainTextToken;
-
-    return response()->json([
-        'token' => $token,
-        'user' => $user->load('resident')
-    ]);
-}
 
     public function profile(Request $request)
     {

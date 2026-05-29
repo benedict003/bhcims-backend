@@ -16,8 +16,8 @@ return new class extends Migration
                 'admin',
                 'nurse',
                 'doctor',
-                'user'
-            ])->default('user');
+                'resident',
+            ])->default('resident');
         });
     }
 
